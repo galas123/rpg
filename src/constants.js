@@ -10,3 +10,4 @@ export const BOARD_SIZE={
   width:23,
   height:12
 };
+export const MOVE_UP_HERO='MOVE_UP_HERO';

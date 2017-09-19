@@ -1,5 +1,6 @@
 import {
   SET_RANDOM_ITEMS,
+  MOVE_UP_HERO,
   BOARD_SIZE,
   HERO,
   DRUG,
@@ -15,6 +16,14 @@ import {Map, List}  from 'immutable';
 
 const defaultState = Map({
   dungeon: exampleBoard,
+  hero   : Map({
+    locationX: null,
+    locationY: null,
+    weapon   : 'stick',
+    heart    : 100,
+    XP       : 0,
+    level    : 0
+  })
 });
 
 export default (state = defaultState, action) => {
@@ -22,21 +31,30 @@ export default (state = defaultState, action) => {
 
   switch (type) {
     case SET_RANDOM_ITEMS:
+      let newState = placeItem(payload.items.hero, HERO, state);
+      newState     = placeItem(payload.items.drug, DRUG, newState);
+      newState     = placeItem(payload.items.weapon, WEAPON, newState);
+      newState     = placeItem(payload.items.enemy, ENEMY, newState);
+      newState     = placeItem(payload.items.dungeon, DUNGEON, newState);
+      newState     = placeItem(payload.items.boss, BOSS, newState);
+      return newState;
 
-      let newDungeon = placeItem(payload.items.hero, HERO, state.get('dungeon') );
-      newDungeon = placeItem(payload.items.drug, DRUG, newDungeon );
-      newDungeon = placeItem(payload.items.weapon,WEAPON, newDungeon);
-      newDungeon = placeItem(payload.items.enemy, ENEMY, newDungeon);
-      newDungeon = placeItem(payload.items.dungeon, DUNGEON, newDungeon);
-      newDungeon = placeItem(payload.items.boss, BOSS, newDungeon);
-      return state.set('dungeon',newDungeon);
+    case MOVE_UP_HERO:
+      let locationX         = state.getIn(['hero', 'locationX']);
+      let locationY         = state.getIn(['hero', 'locationY']);
+      let itemInNewPosition = state.getIn(['dungeon', locationX - 1, locationY]);
+      console.log('positionNew', state.getIn(['dungeon', locationX - 1, locationY]));
+      if (itemInNewPosition === 0 | itemInNewPosition === DRUG | itemInNewPosition === WEAPON) {
+        return state.setIn(['dungeon', locationX - 1, locationY], HERO).setIn(['dungeon', locationX, locationY], 0).setIn(['hero', 'locationX'], locationX - 1);
+      }
+      return state;
   }
   return state;
 }
 
 const getRandomCell = (dungeonBoard) => {
-  let i = Math.floor(Math.random() * BOARD_SIZE.height);
-  let j = Math.floor(Math.random() * BOARD_SIZE.width);
+  let i          = Math.floor(Math.random() * BOARD_SIZE.height);
+  let j          = Math.floor(Math.random() * BOARD_SIZE.width);
   let randomLine = dungeonBoard.get(i);
   if (randomLine.get(j) !== 0) {
     j = randomLine.indexOf(0);
@@ -47,10 +65,18 @@ const getRandomCell = (dungeonBoard) => {
   return {i, j}
 }
 
-const placeItem = (quantity, itemName, dungeonList) =>{
+const placeItem = (quantity, itemName, state) => {
+  let dungeonList = state.get('dungeon');
+  let heroInfo    = state.get('hero');
   for (let n = 0; n < quantity; n++) {
     let {i, j}= getRandomCell(dungeonList);
-    dungeonList = dungeonList.setIn([ i, j], itemName);
+    dungeonList = dungeonList.setIn([i, j], itemName);
+    if (itemName === HERO) {
+      heroInfo = heroInfo.set('locationX', i).set('locationY', j);
+      console.log('heroInfo', heroInfo);
+    }
+
   }
-  return dungeonList
+  return state.set('dungeon', dungeonList).set('hero', heroInfo);
+  ;
 }

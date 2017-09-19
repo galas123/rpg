@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import {connect} from 'react-redux';
 import Line from './line';
+import {moveUpHero} from '../AC/moveUpHero';
 
 class Board extends Component {
   render() {
@@ -16,11 +17,29 @@ class Board extends Component {
       </div>
     );
   }
+
+  componentWillMount() {
+    document.addEventListener("keydown", this.onKeyDown.bind(this));
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.onKeyDown.bind(this));
+  }
+
+  onKeyDown = (ev)=> {
+    const {moveUpHero}=this.props;
+    console.log('move up press', ev.keyCode );
+    if (ev.keyCode === 38) {
+      console.log('move up press', ev);
+      moveUpHero();
+    }
+  }
 }
+
 const mapStateToProps = state=> {
   return {
-    dungeon: state.dungeon.get('dungeon')
+    dungeon: state.dungeon.get('dungeon'),
   };
 }
 
-export default connect(mapStateToProps, null)(Board);
+export default connect(mapStateToProps, {moveUpHero})(Board);
