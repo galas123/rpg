@@ -11,3 +11,6 @@ export const BOARD_SIZE={
   height:12
 };
 export const MOVE_UP_HERO='MOVE_UP_HERO';
+export const MOVE_DOWN_HERO='MOVE_DOWN_HERO';
+export const MOVE_LEFT_HERO='MOVE_LEFT_HERO';
+export const MOVE_RIGHT_HERO='MOVE_RIGHT_HERO';

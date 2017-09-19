@@ -4,6 +4,9 @@ import React, {
 import {connect} from 'react-redux';
 import Line from './line';
 import {moveUpHero} from '../AC/moveUpHero';
+import {moveDownHero} from '../AC/moveDownHero';
+import {moveLeftHero} from '../AC/moveLeftHero';
+import {moveRightHero} from '../AC/moveRightHero';
 
 class Board extends Component {
   render() {
@@ -27,11 +30,20 @@ class Board extends Component {
   }
 
   onKeyDown = (ev)=> {
-    const {moveUpHero}=this.props;
-    console.log('move up press', ev.keyCode );
-    if (ev.keyCode === 38) {
-      console.log('move up press', ev);
-      moveUpHero();
+    const {moveUpHero, moveDownHero, moveLeftHero, moveRightHero}=this.props;
+    switch (ev.keyCode) {
+      case 38:
+        moveUpHero();
+        break;
+      case 40:
+        moveDownHero();
+        break;
+      case 37:
+        moveLeftHero();
+        break;
+      case 39:
+        moveRightHero();
+        break;
     }
   }
 }
@@ -42,4 +54,4 @@ const mapStateToProps = state=> {
   };
 }
 
-export default connect(mapStateToProps, {moveUpHero})(Board);
+export default connect(mapStateToProps, {moveUpHero, moveDownHero, moveLeftHero, moveRightHero})(Board);

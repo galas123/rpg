@@ -1,6 +1,9 @@
 import {
   SET_RANDOM_ITEMS,
   MOVE_UP_HERO,
+  MOVE_DOWN_HERO,
+  MOVE_LEFT_HERO,
+  MOVE_RIGHT_HERO,
   BOARD_SIZE,
   HERO,
   DRUG,
@@ -28,7 +31,9 @@ const defaultState = Map({
 
 export default (state = defaultState, action) => {
   const {type, payload} = action;
-
+  let locationX         = state.getIn(['hero', 'locationX']);
+  let locationY         = state.getIn(['hero', 'locationY']);
+  let itemInNewPosition;
   switch (type) {
     case SET_RANDOM_ITEMS:
       let newState = placeItem(payload.items.hero, HERO, state);
@@ -40,12 +45,38 @@ export default (state = defaultState, action) => {
       return newState;
 
     case MOVE_UP_HERO:
-      let locationX         = state.getIn(['hero', 'locationX']);
-      let locationY         = state.getIn(['hero', 'locationY']);
-      let itemInNewPosition = state.getIn(['dungeon', locationX - 1, locationY]);
-      console.log('positionNew', state.getIn(['dungeon', locationX - 1, locationY]));
+      itemInNewPosition = state.getIn(['dungeon', locationX - 1, locationY]);
       if (itemInNewPosition === 0 | itemInNewPosition === DRUG | itemInNewPosition === WEAPON) {
-        return state.setIn(['dungeon', locationX - 1, locationY], HERO).setIn(['dungeon', locationX, locationY], 0).setIn(['hero', 'locationX'], locationX - 1);
+        return state.setIn(['dungeon', locationX - 1, locationY], HERO)
+          .setIn(['dungeon', locationX, locationY], 0)
+          .setIn(['hero', 'locationX'], locationX - 1);
+      }
+      return state;
+
+    case MOVE_DOWN_HERO:
+    itemInNewPosition = state.getIn(['dungeon', locationX + 1, locationY]);
+    if (itemInNewPosition === 0 | itemInNewPosition === DRUG | itemInNewPosition === WEAPON) {
+      return state.setIn(['dungeon', locationX + 1, locationY], HERO)
+        .setIn(['dungeon', locationX, locationY], 0)
+        .setIn(['hero', 'locationX'], locationX + 1);
+    }
+      return state;
+
+    case MOVE_LEFT_HERO:
+      itemInNewPosition = state.getIn(['dungeon', locationX, locationY-1]);
+      if (itemInNewPosition === 0 | itemInNewPosition === DRUG | itemInNewPosition === WEAPON) {
+        return state.setIn(['dungeon', locationX, locationY-1], HERO)
+          .setIn(['dungeon', locationX, locationY], 0)
+          .setIn(['hero', 'locationY'], locationY - 1);
+      }
+      return state;
+
+    case MOVE_RIGHT_HERO:
+      itemInNewPosition = state.getIn(['dungeon', locationX, locationY+1]);
+      if (itemInNewPosition === 0 | itemInNewPosition === DRUG | itemInNewPosition === WEAPON) {
+        return state.setIn(['dungeon', locationX, locationY+1], HERO)
+          .setIn(['dungeon', locationX, locationY], 0)
+          .setIn(['hero', 'locationY'], locationY + 1);
       }
       return state;
   }
