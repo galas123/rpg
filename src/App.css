@@ -73,4 +73,14 @@
 .android-icon,.android-github-alt{
   color:red;
 }
+.hero-skill{
+  display : flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin-bottom : 10px;
+
+}
+.stats-frame{
+  width:195px;
+}
 

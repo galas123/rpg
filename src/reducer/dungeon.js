@@ -1,3 +1,4 @@
+import {dungeon0, DUNGEONS} from '../exampleBoard';
 import {
   SET_RANDOM_ITEMS,
   MOVE_UP_HERO,
@@ -10,22 +11,29 @@ import {
   DUNGEON,
   WEAPON,
   ENEMY,
-  BOSS
+  BOSS,
+  HEART_INCREASE,
+  WEAPONS,
+  STICK,
+  WALL,
+  DUNGEON_OBJECTS
 } from '../constants';
 
-import {exampleBoard} from '../exampleBoard';
 
-import {Map, List}  from 'immutable';
+import {Map}  from 'immutable';
 
 const defaultState = Map({
-  dungeon: exampleBoard,
+  dungeon: dungeon0,
+  dungeonNumber:0,
   hero   : Map({
     locationX: null,
     locationY: null,
-    weapon   : 'stick',
+    attack:7,
+    weapon   : STICK,
     heart    : 100,
-    XP       : 0,
-    level    : 0
+    level:0,
+    nextLevel    : 60,
+    lastMoveOnTheLeft : null
   })
 });
 
@@ -35,6 +43,7 @@ export default (state = defaultState, action) => {
   let locationY         = state.getIn(['hero', 'locationY']);
   let itemInNewPosition;
   switch (type) {
+    
     case SET_RANDOM_ITEMS:
       let newState = placeItem(payload.items.hero, HERO, state);
       newState     = placeItem(payload.items.drug, DRUG, newState);
@@ -46,39 +55,22 @@ export default (state = defaultState, action) => {
 
     case MOVE_UP_HERO:
       itemInNewPosition = state.getIn(['dungeon', locationX - 1, locationY]);
-      if (itemInNewPosition === 0 | itemInNewPosition === DRUG | itemInNewPosition === WEAPON) {
-        return state.setIn(['dungeon', locationX - 1, locationY], HERO)
-          .setIn(['dungeon', locationX, locationY], 0)
-          .setIn(['hero', 'locationX'], locationX - 1);
-      }
-      return state;
+      return connectWithItem(itemInNewPosition, locationX - 1, locationY, locationX, locationY, state );
 
     case MOVE_DOWN_HERO:
     itemInNewPosition = state.getIn(['dungeon', locationX + 1, locationY]);
-    if (itemInNewPosition === 0 | itemInNewPosition === DRUG | itemInNewPosition === WEAPON) {
-      return state.setIn(['dungeon', locationX + 1, locationY], HERO)
-        .setIn(['dungeon', locationX, locationY], 0)
-        .setIn(['hero', 'locationX'], locationX + 1);
-    }
-      return state;
+      return connectWithItem(itemInNewPosition, locationX + 1, locationY, locationX, locationY, state );
 
     case MOVE_LEFT_HERO:
       itemInNewPosition = state.getIn(['dungeon', locationX, locationY-1]);
-      if (itemInNewPosition === 0 | itemInNewPosition === DRUG | itemInNewPosition === WEAPON) {
-        return state.setIn(['dungeon', locationX, locationY-1], HERO)
-          .setIn(['dungeon', locationX, locationY], 0)
-          .setIn(['hero', 'locationY'], locationY - 1);
-      }
-      return state;
+      return connectWithItem(itemInNewPosition, locationX, locationY-1, locationX, locationY, state )
+        .setIn(['hero','lastMoveOnTheLeft'],'horizontal');
+
 
     case MOVE_RIGHT_HERO:
       itemInNewPosition = state.getIn(['dungeon', locationX, locationY+1]);
-      if (itemInNewPosition === 0 | itemInNewPosition === DRUG | itemInNewPosition === WEAPON) {
-        return state.setIn(['dungeon', locationX, locationY+1], HERO)
-          .setIn(['dungeon', locationX, locationY], 0)
-          .setIn(['hero', 'locationY'], locationY + 1);
-      }
-      return state;
+      return connectWithItem(itemInNewPosition, locationX, locationY+1, locationX, locationY, state )
+          .setIn(['hero','lastMoveOnTheLeft'],null);
   }
   return state;
 }
@@ -94,7 +86,7 @@ const getRandomCell = (dungeonBoard) => {
     }
   }
   return {i, j}
-}
+};
 
 const placeItem = (quantity, itemName, state) => {
   let dungeonList = state.get('dungeon');
@@ -106,8 +98,53 @@ const placeItem = (quantity, itemName, state) => {
       heroInfo = heroInfo.set('locationX', i).set('locationY', j);
       console.log('heroInfo', heroInfo);
     }
-
-  }
+  } 
   return state.set('dungeon', dungeonList).set('hero', heroInfo);
-  ;
+};
+
+const connectWithItem=(itemName, x1,y1,x0,y0,state)=>{
+  let newState=state;
+  let currentAttack=state.getIn(['hero', 'attack']);
+  if (itemName !==WALL && itemName !==ENEMY && itemName !==DUNGEON ) {
+
+    if (itemName === DRUG){
+      let new_heart_rate=state.getIn(['hero','heart'])+HEART_INCREASE;
+      newState=state.setIn(['hero','heart'],new_heart_rate);
+    }
+
+    if (itemName === WEAPON){
+      let currentWeapon=state.getIn(['hero', 'weapon']);
+      let currentWeaponIndex=WEAPONS.indexOf(currentWeapon);
+      let nextWeapon=WEAPONS[currentWeaponIndex + 1];
+      if (currentWeaponIndex < 6) {
+        newState = state.setIn(['hero', 'weapon'], nextWeapon).setIn(['hero', 'attack'],currentAttack+nextWeapon.addAttack);
+      }
+    }
+
+    return newState.setIn(['dungeon', x1, y1], HERO)
+      .setIn(['dungeon', x0, y0], 0)
+      .setIn(['hero', 'locationX'], x1)
+      .setIn(['hero', 'locationY'], y1);
+  }
+
+  if (itemName === DUNGEON){
+    let newDungeonNumber=state.get('dungeonNumber')+1;
+    console.log('newDungeonNumber',newDungeonNumber);
+    if (newDungeonNumber < 4) {
+      console.log({DUNGEONS},'DUNGEONS[newDungeonNumber]',DUNGEONS[newDungeonNumber]);
+      newState = state.set('dungeonNumber', newDungeonNumber)
+        .set('dungeon', DUNGEONS[newDungeonNumber])
+        .setIn(['hero', 'locationX'],null)
+        .setIn(['hero', 'locationY'],null);
+      newState = placeItem(DUNGEON_OBJECTS[newDungeonNumber].hero, HERO, newState);
+      newState = placeItem(DUNGEON_OBJECTS[newDungeonNumber].drug, DRUG, newState);
+      newState = placeItem(DUNGEON_OBJECTS[newDungeonNumber].weapon, WEAPON, newState);
+      newState = placeItem(DUNGEON_OBJECTS[newDungeonNumber].enemy, ENEMY, newState);
+      newState = placeItem(DUNGEON_OBJECTS[newDungeonNumber].dungeon, DUNGEON, newState);
+      newState = placeItem(DUNGEON_OBJECTS[newDungeonNumber].boss, BOSS, newState);
+    }
+    return newState;
+  }
+
+  return newState;
 }

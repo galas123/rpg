@@ -21,6 +21,8 @@ class Container extends Component {
   }
 
   render() {
+    const {heart, weapon, attack, level, nextLevel,dungeonNumber}=this.props;
+    console.log('heart',heart);
     return (
       <div className="rpg">
         <h1 className="rpg_caption">Hero of Dungeon</h1>
@@ -28,17 +30,30 @@ class Container extends Component {
         <div className="wrapper">
           
           <dl className="stats-frame">
-              <dt>Health:</dt>
-              <dd>10</dd>
-            <dt>Weapon:</dt>
-            <dd>Stick</dd>
-            <dt>Level:</dt>
-            <dd>2</dd>
-            <dt>Next Level:</dt>
-            <dd>60XP</dd>
-            <dt>Dungeon:</dt>
-            <dd>0</dd>
-            
+            <div className="hero-skill">  
+            <dt className="hero-skill-caption">Health:</dt>
+              <dd className="hero-skill-value">{heart}</dd>
+              </div>
+            <div className="hero-skill">
+            <dt className="hero-skill-caption">Weapon:</dt>
+            <dd className="hero-skill-value">{weapon.name}</dd>
+              </div>
+            <div className="hero-skill">
+              <dt className="hero-skill-caption">Attack:</dt>
+              <dd className="hero-skill-value">{attack}</dd>
+            </div>
+            <div className="hero-skill">
+            <dt className="hero-skill-caption">Level:</dt>
+            <dd className="hero-skill-value">{level}</dd>
+              </div>
+            <div className="hero-skill">
+            <dt className="hero-skill-caption">Next Level:</dt>
+            <dd className="hero-skill-value">{nextLevel}</dd><span>XP</span>
+              </div>
+            <div className="hero-skill">
+            <dt className="hero-skill-caption">Dungeon:</dt>
+            <dd className="hero-skill-value">{dungeonNumber}</dd>
+              </div>
           </dl>
           
           <div>
@@ -52,5 +67,15 @@ class Container extends Component {
     );
   }
 }
+const mapStateToProps = state=> {
+  return {
+    heart: state.dungeon.getIn(['hero','heart']),
+    attack:state.dungeon.getIn(['hero','attack']),
+    weapon   : state.dungeon.getIn(['hero','weapon']),
+    level: state.dungeon.getIn(['hero','level']),
+    nextLevel    : state.dungeon.getIn(['hero','nextLevel']),
+    dungeonNumber :state.dungeon.get('dungeonNumber')
+  };
+}
 
-export default connect(null, {setRandomItems})(Container);
+export default connect(mapStateToProps, {setRandomItems})(Container);
