@@ -30,7 +30,8 @@ class Board extends Component {
   }
 
   onKeyDown = (ev)=> {
-    const {moveUpHero, moveDownHero, moveLeftHero, moveRightHero}=this.props;
+    const {moveUpHero, moveDownHero, moveLeftHero, moveRightHero, heart}=this.props;
+    if (heart>0){
     switch (ev.keyCode) {
       case 38:
         moveUpHero();
@@ -45,12 +46,14 @@ class Board extends Component {
         moveRightHero();
         break;
     }
+    }
   }
 }
 
 const mapStateToProps = state=> {
   return {
     dungeon: state.dungeon.get('dungeon'),
+    heart: state.dungeon.getIn(['hero','heart']),
   };
 }
 

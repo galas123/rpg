@@ -23,6 +23,9 @@
   to { transform: rotate(360deg); }
 }
 
+.rpg{
+  position:relative;
+}
 .rpg_caption{
   text-align: center;
   color: #00699B;
@@ -32,8 +35,9 @@
   color: #8C6A47;
 }
 .stats-frame{
-  font-size: 20px;
+  font-size: 16px;
   color:#00699B;
+  width:200px;
 }
 
 .wrapper{
@@ -49,6 +53,9 @@
   text-align: center;
   line-height: 30px;
   font-size: 25px;
+}
+.in-fog{
+  background-color: #898989;
 }
 .board-line{
   display:flex;
@@ -80,7 +87,47 @@
   margin-bottom : 10px;
 
 }
-.stats-frame{
-  width:195px;
+.rpg-stop-game::after{
+  content:'';
+  position:absolute;
+  width:100%;
+  height:140%;
+  background-color:rgba(0,0,0,0.5);
+  left: 0;
+  top: 0;
+  z-index:5;
+}
+.rpg-looser::before{
+  content: 'You are died!';
+  padding: 20px 30px;
+  position: absolute;
+  width: 100px;
+  border: 1px solid #ddd;
+  z-index: 6;
+  left: 45%;
+  top: 45%;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 1px 1px 1px #ccc;
+}
+.rpg-winner::before{
+  content: 'You win!';
+  padding: 20px 30px;
+  position: absolute;
+  width: 266px;
+  height: 188px;
+  border: 1px solid #ddd;
+  z-index: 6;
+  left: 0;
+  right:0;
+  margin:auto;
+  top: 30%;
+  border-radius: 5px;
+  box-shadow: 0 1px 1px 1px #ccc;
+  background-image: url(http://imagizer.imageshack.us/v2/320x240q90/924/eJWotr.jpg);
+  font-size: 66px;
+  vertical-align: middle;
+  line-height: 188px;
+  text-shadow: 1px 2px 3px rgba(0,0,0,0.5);
 }
 
