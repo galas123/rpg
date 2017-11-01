@@ -98,7 +98,7 @@
   z-index:5;
 }
 .rpg-looser::before{
-  content: 'You are died!';
+  content: 'You are dead!';
   padding: 20px 30px;
   position: absolute;
   width: 100px;

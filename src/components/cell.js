@@ -13,7 +13,10 @@ class Cell extends Component {
 
     let cellContent;
     let btnClass;
-    if ((Math.abs(rowIndex - coordinateHeroY) > 2 || Math.abs(lineIndex - coordinateHeroX) >2) && fog) {
+    let deltaY=Math.abs(rowIndex - coordinateHeroY);
+    let deltaX=Math.abs(lineIndex - coordinateHeroX)
+
+    if (((deltaY > 2 || deltaX>2) || (deltaX==2 && deltaY==2))  && fog) {
       btnClass = classNames({
         'cell'      : true,
         'in-fog': true,
