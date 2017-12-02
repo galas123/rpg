@@ -1,10 +1,5 @@
-import React, {
-  Component
-} from 'react';
 import {MOVE_RIGHT_HERO} from '../constants';
 
-export const moveRightHero = () => {
-  return {
+export const moveRightHero = () =>  ({
     type   : MOVE_RIGHT_HERO
-  };
-}
+  });

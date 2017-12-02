@@ -1,30 +1,6 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
-}
-
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
 .rpg{
   position:relative;
+  width: 1420px;
 }
 .rpg_caption{
   text-align: center;
@@ -87,18 +63,17 @@
   margin-bottom : 10px;
 
 }
-.rpg-stop-game::after{
-  content:'';
+.rpg-stop-game{
   position:absolute;
-  width:100%;
+  width:120%;
   height:140%;
   background-color:rgba(0,0,0,0.5);
   left: 0;
   top: 0;
   z-index:5;
 }
-.rpg-looser::before{
-  content: 'You are dead!';
+.rpg-looser{
+  position:absolute;
   padding: 20px 30px;
   position: absolute;
   width: 100px;
@@ -110,8 +85,7 @@
   border-radius: 5px;
   box-shadow: 0 1px 1px 1px #ccc;
 }
-.rpg-winner::before{
-  content: 'You win!';
+.rpg-winner{
   padding: 20px 30px;
   position: absolute;
   width: 266px;

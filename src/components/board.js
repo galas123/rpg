@@ -7,6 +7,7 @@ import {moveUpHero} from '../AC/moveUpHero';
 import {moveDownHero} from '../AC/moveDownHero';
 import {moveLeftHero} from '../AC/moveLeftHero';
 import {moveRightHero} from '../AC/moveRightHero';
+import {heart} from '../selectors/selectors';
 
 class Board extends Component {
   render() {
@@ -53,7 +54,7 @@ class Board extends Component {
 const mapStateToProps = state=> {
   return {
     dungeon: state.dungeon.get('dungeon'),
-    heart: state.dungeon.getIn(['hero','heart']),
+    heart: heart(state),
   };
 }
 

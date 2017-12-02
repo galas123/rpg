@@ -1,12 +1,13 @@
-import {} from './constants';
+import {} from './constants/mechanics';
 import React, {Component} from 'react';
 import './App.css';
 import Board from './components/board';
-import FogOfWar from './components/fogOfWar'
-import {setRandomItems} from './AC/setRandomItems'
+import FogOfWar from './components/fogOfWar';
+import StatsFrame from './components/statsFrame';
+import {setRandomItems} from './AC/setRandomItems';
+import {isLooser, isWinner, attack, dungeonNumber, heart, level, nextLevel, weapon} from './selectors/selectors';
 import {connect} from 'react-redux';
 
-import classNames from 'classnames';
 
 class Container extends Component {
 
@@ -16,68 +17,54 @@ class Container extends Component {
   }
 
   render() {
-    const {heart, weapon, attack, level, nextLevel,dungeonNumber,isWinner}=this.props;
-    const rpgClass = classNames({
-      'rpg'   : true,
-      'rpg-stop-game':heart <=0||isWinner,
-      'rpg-looser'  : heart <=0,
-      'rpg-winner'  : isWinner,
+    const {heart, weapon, attack, level, nextLevel,dungeonNumber, isLooser, isWinner}=this.props;
+    let stopGamePic1=null;
+    let stopGamePic2=null;
 
-    });
-    return (
-      <div className={rpgClass}>
-        <h1 className="rpg_caption">Hero of Dungeon</h1>
-        <h2 className="rpg_goal-name">Kill the boss in dungeon 4</h2>
-        <div className="wrapper">
-          
-          <dl className="stats-frame">
-            <div className="hero-skill">  
-            <dt className="hero-skill-caption">Health:</dt>
-              <dd className="hero-skill-value">{heart}</dd>
-              </div>
-            <div className="hero-skill">
-            <dt className="hero-skill-caption">Weapon:</dt>
-            <dd className="hero-skill-value">{weapon.name}</dd>
-              </div>
-            <div className="hero-skill">
-              <dt className="hero-skill-caption">Attack:</dt>
-              <dd className="hero-skill-value">{attack}</dd>
-            </div>
-            <div className="hero-skill">
-            <dt className="hero-skill-caption">Level:</dt>
-            <dd className="hero-skill-value">{level}</dd>
-              </div>
-            <div className="hero-skill">
-            <dt className="hero-skill-caption">Next Level:</dt>
-            <dd className="hero-skill-value">{nextLevel}</dd><span>XP</span>
-              </div>
-            <div className="hero-skill">
-            <dt className="hero-skill-caption">Dungeon:</dt>
-            <dd className="hero-skill-value">{dungeonNumber}</dd>
-              </div>
-          </dl>
-          
-          <div>
+    if (isLooser||isWinner){
+      stopGamePic1=(<div className="rpg-stop-game"/>)
+        }
+
+        if (isLooser) {
+          stopGamePic2=
+            (<div className="rpg-looser">
+              You are dead!
+            </div>);
+          console.log('isLooser', stopGamePic2);
+        }
+        if (isWinner){
+          stopGamePic2=
+            (<div className="rpg-winner">
+              You win!
+            </div>);
+        }
+        return (
+        <div className='rpg'>
+          {stopGamePic1}
+          {stopGamePic2}
+          <h1 className="rpg_caption">Hero of Dungeon</h1>
+          <h2 className="rpg_goal-name">Kill the boss in dungeon 4</h2>
+          <div className="wrapper">
+            <StatsFrame heart={heart} weapon={weapon} attack={attack}
+                        level={level} nextLevel={nextLevel} dungeonNumber={dungeonNumber} />
             <Board classname={"game-board"}/>
-          </div>
-          <div className="toggle-fog">
             <FogOfWar/>
-            </div>
+          </div>
         </div>
-      </div>
-    );
-  }
-}
-const mapStateToProps = state=> {
-  return {
-    heart: state.dungeon.getIn(['hero','heart']),
-    attack:state.dungeon.getIn(['hero','attack']),
-    weapon   : state.dungeon.getIn(['hero','weapon']),
-    level: state.dungeon.getIn(['hero','level']),
-    nextLevel    : state.dungeon.getIn(['hero','nextLevel']),
-    dungeonNumber :state.dungeon.get('dungeonNumber'),
-    isWinner:state.dungeon.get('isWinner')
-  };
-}
+        );
+        }
+        }
+        const mapStateToProps = state=> {
+          return {
+          isLooser:isLooser(state),
+          isWinner:isWinner(state),
+          heart: heart(state),
+          attack:attack(state),
+          weapon   : weapon(state),
+          level: level(state),
+          nextLevel    : nextLevel(state),
+          dungeonNumber :dungeonNumber(state)
+        };
+        }
 
-export default connect(mapStateToProps, {setRandomItems})(Container);
+        export default connect(mapStateToProps, {setRandomItems})(Container);

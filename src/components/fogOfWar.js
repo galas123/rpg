@@ -8,7 +8,9 @@ import {toggleFog} from '../AC/toggleFog';
 class fogOfWar extends Component {
   render() {
     return (
-      <button type="button" onClick={this.onClick}>Toggle Fog of War</button>
+      <div className="toggle-fog">
+        <button type="button" onClick={this.onClick}>Toggle Fog of War</button>
+      </div>
     );
   }
 
