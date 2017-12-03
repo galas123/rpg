@@ -65,8 +65,8 @@ class Cell extends Component {
 const mapStateToProps = state=> {
   return {
     lastMoveOnTheLeft: state.dungeon.getIn(['hero','lastMoveOnTheLeft']),
-    coordinateHeroX: state.dungeon.getIn(['hero','locationX']),
-    coordinateHeroY: state.dungeon.getIn(['hero','locationY']),
+    coordinateHeroX: state.dungeon.getIn(['heroLocation','x']),
+    coordinateHeroY: state.dungeon.getIn(['heroLocation','y']),
     fog: state.dungeon.get('fog'),
   };
 }

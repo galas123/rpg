@@ -1,4 +1,4 @@
-import {dungeon0, DUNGEONS} from '../emptyDungeons';
+import {DUNGEONS} from '../emptyDungeons';
 import {
   mapDungeonToGettingXP,
   XPtoGetNextLevel, 
@@ -12,8 +12,8 @@ import {
   enemySetForDungeon,
 } from '../constants';
 
-import {placeItem} from './funcPlaceItem';
-import {placeEnemies} from './funcPlaceEnemies';
+
+import {DungeonGenerator} from './dungeonGenerator';
 
 export const connectWithItem=(itemName, x1,y1,x0,y0,state)=>{
   let newState=state;
@@ -46,8 +46,8 @@ export const connectWithItem=(itemName, x1,y1,x0,y0,state)=>{
       newState=newState
         .setIn(['dungeon', x1, y1], HERO)
         .setIn(['dungeon', x0, y0], 0)
-        .setIn(['hero', 'locationX'], x1)
-        .setIn(['hero', 'locationY'], y1)
+        .setIn(['heroLocation', 'x'], x1)
+        .setIn(['heroLocation', 'y'], y1)
     } else {
       newState = newState.setIn(['dungeon', x1, y1], {... itemName, health: enemyHealth});
     }
@@ -72,26 +72,26 @@ export const connectWithItem=(itemName, x1,y1,x0,y0,state)=>{
 
     return newState.setIn(['dungeon', x1, y1], HERO)
       .setIn(['dungeon', x0, y0], 0)
-      .setIn(['hero', 'locationX'], x1)
-      .setIn(['hero', 'locationY'], y1);
+      .setIn(['heroLocation', 'x'], x1)
+      .setIn(['heroLocation', 'y'], y1);
   }
 
   if (itemName === DUNGEON){
     let newDungeonNumber=state.get('dungeonNumber')+1;
     if (newDungeonNumber <5) {
-      newState = state.set('dungeonNumber', newDungeonNumber)
-        .set('dungeon', DUNGEONS[newDungeonNumber])
-        .setIn(['hero', 'locationX'],null)
-        .setIn(['hero', 'locationY'],null);
-      newState = placeItem(DUNGEON_OBJECTS[newDungeonNumber].hero, HERO, newState);
-      newState = placeItem(DUNGEON_OBJECTS[newDungeonNumber].drug, DRUG, newState);
-      newState = placeItem(DUNGEON_OBJECTS[newDungeonNumber].weapon, WEAPON, newState);
-      newState =  placeEnemies(enemySetForDungeon[newDungeonNumber], newState);
-      newState = placeItem(DUNGEON_OBJECTS[newDungeonNumber].dungeon, DUNGEON, newState);
-      console.log('newDungeonNumber',newDungeonNumber);
+        newState = state.set('dungeonNumber', newDungeonNumber)
+            .set('dungeon', DUNGEONS[newDungeonNumber])
+            .setIn(['heroLocation', 'x'], null)
+            .setIn(['heroLocation', 'y'], null);
+        const dungeonGenerator = new DungeonGenerator(newState);
+        dungeonGenerator.placeItem(DUNGEON_OBJECTS[newDungeonNumber].hero, HERO)
+            .placeItem(DUNGEON_OBJECTS[newDungeonNumber].drug, DRUG)
+            .placeItem(DUNGEON_OBJECTS[newDungeonNumber].weapon, WEAPON)
+            .placeEnemies(enemySetForDungeon[newDungeonNumber])
+            .placeItem(DUNGEON_OBJECTS[newDungeonNumber].dungeon, DUNGEON);
 
+        return dungeonGenerator.newState;
     }
-    return newState;
   }
   return newState;
 }
