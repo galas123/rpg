@@ -30,7 +30,6 @@ class Container extends Component {
             (<div className="rpg-looser">
               You are dead!
             </div>);
-          console.log('isLooser', stopGamePic2);
         }
         if (isWinner){
           stopGamePic2=

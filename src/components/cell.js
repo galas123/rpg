@@ -1,4 +1,3 @@
-import {WALL, DRUG, WEAPON, DUNGEON, HERO, ENEMY, BOSS} from '../constants';
 import React, {
   Component
 } from 'react';
@@ -6,6 +5,8 @@ import {Icon} from 'react-fa';
 import {connect} from 'react-redux';
 
 import classNames from 'classnames';
+
+import {WALL, DRUG, WEAPON, DUNGEON, HERO, ENEMY, BOSS} from '../constants';
 
 class Cell extends Component {
   render() {
@@ -33,7 +34,6 @@ class Cell extends Component {
           cellContent = (<Icon className="android-icon" name="android"/>);
         }
         if (value.name === BOSS) {
-          console.log('BOSS');
           cellContent = (<Icon className="android-github-alt" name="github-alt"/>);
         }
       } else {
@@ -59,6 +59,9 @@ class Cell extends Component {
         </div>
       );
 
+  }
+  rrr(){
+    return {};
   }
 }
 
