@@ -2,7 +2,7 @@ import {} from './constants/mechanics';
 import React, {Component} from 'react';
 import './App.css';
 import Board from './components/board';
-import FogOfWar from './components/fogOfWar';
+import FogOfWarToggler from './components/fogOfWarToggler';
 import StatsFrame from './components/statsFrame';
 import {setRandomItems} from './AC/setRandomItems';
 import {isLooserSelector, isWinnerSelector, attackSelector, dungeonNumberSelector, heartSelector, levelSelector,
@@ -48,7 +48,7 @@ class Container extends Component {
             <StatsFrame heart={heart} weapon={weapon} attack={attack}
                         level={level} nextLevel={nextLevel} dungeonNumber={dungeonNumber} />
             <Board classname={"game-board"}/>
-            <FogOfWar/>
+            <FogOfWarToggler/>
           </div>
         </div>
         );

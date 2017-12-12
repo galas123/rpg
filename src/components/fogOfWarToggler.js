@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import {toggleFog} from '../AC/toggleFog';
 
 
-class fogOfWar extends Component {
+class fogOfWarToggler extends Component {
   render() {
     return (
       <div className="toggle-fog">
@@ -21,4 +21,4 @@ class fogOfWar extends Component {
   }
 }
 
-export default connect(null, {toggleFog})(fogOfWar);
+export default connect(null, {toggleFog})(fogOfWarToggler);
