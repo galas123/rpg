@@ -14,6 +14,8 @@ import {
     enemySetForDungeon,
     TOGGLE_FOG
 } from '../constants';
+import {isLooserSelector} from '../selectors/selectors';
+
 
 import {DungeonGenerator} from './dungeonGenerator';
 import {connectWithItem} from './funcConnectWithItems';
@@ -44,7 +46,9 @@ export default (state = defaultState, action) => {
     let locationX = state.getIn(['heroLocation', 'x']);
     let locationY = state.getIn(['heroLocation', 'y']);
     let itemInNewPosition;
-
+    if (isLooserSelector(state)) {
+        return;
+    }
     switch (type) {
         case TOGGLE_FOG:
             return state.set('fog', !state.get('fog'));

@@ -13,7 +13,6 @@ export const getRandomCell = (dungeonBoard) => {
         const cells = randomLine.toArray().map((item, index) => ({
             item, index
         })).filter(cell => cell.item === 0);
-        console.log({cells});
         j = cells[Math.floor(Math.random() * cells.length)].index;
     }
     return {i, j}

@@ -11,14 +11,16 @@ import {
   WEAPONS,DUNGEON_OBJECTS,
   enemySetForDungeon,
 } from '../constants';
+import { attackSelector, dungeonNumberSelector, heartSelector, levelSelector,
+    nextLevelSelector, weaponSelector} from '../selectors/selectors';
 
 
 import {DungeonGenerator} from './dungeonGenerator';
 
 export const connectWithItem=(itemName, x1,y1,x0,y0,state)=>{
   let newState=state;
-  let currentAttack=state.getIn(['hero', 'attack']);
-  let heroHealth=state.getIn(['hero','heart']);
+  let currentAttack=attackSelector(newState);
+  let heroHealth=heartSelector(newState);
 
   if (itemName.name ==='ENEMY'||itemName.name ==='BOSS'){
     let enemyHealth=itemName.health-currentAttack;
@@ -31,8 +33,8 @@ export const connectWithItem=(itemName, x1,y1,x0,y0,state)=>{
       if (itemName.name ==='BOSS'){
         return  newState.set('isWinner', true);
       }
-      let XPtoNextLevel=newState.getIn(['hero', 'nextLevel']);
-      let heroLevel=newState.getIn(['hero', 'level']);
+      let XPtoNextLevel=nextLevelSelector(newState);
+      let heroLevel=levelSelector(newState);
       let xpForDeadEnemy=mapDungeonToGettingXP[heroLevel];
       if (XPtoNextLevel-xpForDeadEnemy<=0){
         newState=newState
@@ -57,12 +59,12 @@ export const connectWithItem=(itemName, x1,y1,x0,y0,state)=>{
   if (itemName !==WALL && itemName !==DUNGEON ) {
 
     if (itemName === DRUG){
-      let new_heart_rate=state.getIn(['hero','heart'])+HEART_INCREASE;
+      let new_heart_rate=heartSelector(newState)+HEART_INCREASE;
       newState=state.setIn(['hero','heart'],new_heart_rate);
     }
 
     if (itemName === WEAPON){
-      let currentWeapon=state.getIn(['hero', 'weapon']);
+      let currentWeapon=weaponSelector(newState);
       let currentWeaponIndex=WEAPONS.indexOf(currentWeapon);
       let nextWeapon=WEAPONS[currentWeaponIndex + 1];
       if (currentWeaponIndex < 5) {
@@ -77,7 +79,7 @@ export const connectWithItem=(itemName, x1,y1,x0,y0,state)=>{
   }
 
   if (itemName === DUNGEON){
-    let newDungeonNumber=state.get('dungeonNumber')+1;
+    let newDungeonNumber=dungeonNumberSelector(newState)+1;
     if (newDungeonNumber <5) {
         newState = state.set('dungeonNumber', newDungeonNumber)
             .set('dungeon', DUNGEONS[newDungeonNumber])

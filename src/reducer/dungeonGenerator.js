@@ -2,14 +2,16 @@ import {
     HERO,
     ENEMIES
 } from '../constants';
+import {dungeonSelector, heartSelector, levelSelector,
+    nextLevelSelector, weaponSelector, heroLocationSelector} from '../selectors/selectors';
 
 import {getRandomCell} from './funcGetRandomCell';
 
 export class DungeonGenerator {
     constructor(newState) {
         this.newState = newState;
-        this.dungeonList = newState.get('dungeon');
-        this.heroLocation = newState.get('heroLocation');
+        this.dungeonList = dungeonSelector(this.newState);
+        this.heroLocation = heroLocationSelector(this.newState);
     }
 
     placeItem = (quantity, itemName) => {
@@ -25,10 +27,9 @@ export class DungeonGenerator {
     };
 
     placeEnemies=(quantityArray)=>{
-        let dungeonList = this.newState.get('dungeon');
         quantityArray.forEach((quantity, enemyLvl)=>{
             for (let n = 0; n < quantity; n++) {
-                let {i, j}= getRandomCell(dungeonList);
+                let {i, j}= getRandomCell(this.dungeonList);
 
                 this.dungeonList = this.dungeonList.setIn([i, j], Object.assign({}, ENEMIES[enemyLvl]));
             }

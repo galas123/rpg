@@ -5,7 +5,8 @@ import Board from './components/board';
 import FogOfWar from './components/fogOfWar';
 import StatsFrame from './components/statsFrame';
 import {setRandomItems} from './AC/setRandomItems';
-import {isLooser, isWinner, attack, dungeonNumber, heart, level, nextLevel, weapon} from './selectors/selectors';
+import {isLooserSelector, isWinnerSelector, attackSelector, dungeonNumberSelector, heartSelector, levelSelector,
+    nextLevelSelector, weaponSelector} from './selectors/selectors';
 import {connect} from 'react-redux';
 
 
@@ -54,15 +55,16 @@ class Container extends Component {
         }
         }
         const mapStateToProps = state=> {
+  const dungeon = state.dungeon;
           return {
-          isLooser:isLooser(state),
-          isWinner:isWinner(state),
-          heart: heart(state),
-          attack:attack(state),
-          weapon   : weapon(state),
-          level: level(state),
-          nextLevel    : nextLevel(state),
-          dungeonNumber :dungeonNumber(state)
+          isLooser:isLooserSelector(dungeon),
+          isWinner:isWinnerSelector(dungeon),
+          heart: heartSelector(dungeon),
+          attack:attackSelector(dungeon),
+          weapon   : weaponSelector(dungeon),
+          level: levelSelector(dungeon),
+          nextLevel    : nextLevelSelector(dungeon),
+          dungeonNumber :dungeonNumberSelector(dungeon)
         };
         }
 

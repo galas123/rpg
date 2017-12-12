@@ -7,7 +7,9 @@ import {moveUpHero} from '../AC/moveUpHero';
 import {moveDownHero} from '../AC/moveDownHero';
 import {moveLeftHero} from '../AC/moveLeftHero';
 import {moveRightHero} from '../AC/moveRightHero';
-import {heart} from '../selectors/selectors';
+
+import {dungeonSelector} from '../selectors/selectors';
+
 
 class Board extends Component {
     render() {
@@ -31,12 +33,7 @@ class Board extends Component {
     }
 
     onKeyDown = (ev) => {
-        const {moveUpHero, moveDownHero, moveLeftHero, moveRightHero, heart} = this.props;
-
-        if (heart <= 0) {
-            return;
-        }
-
+        const {moveUpHero, moveDownHero, moveLeftHero, moveRightHero} = this.props;
         switch (ev.keyCode) {
             case 38:
                 moveUpHero();
@@ -57,8 +54,7 @@ class Board extends Component {
 
 const mapStateToProps = state => {
     return {
-        dungeon: state.dungeon.get('dungeon'),
-        heart: heart(state),
+        dungeon: dungeonSelector(state.dungeon)
     };
 }
 
