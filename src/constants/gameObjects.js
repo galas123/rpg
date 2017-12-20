@@ -18,7 +18,7 @@ export const firstDungeonObjects={
 export const secondDungeonObjects={
   hero:1,
   drug:4,
-  weapon:2,
+  weapon:1,
   dungeon:1
 };
 export const thirdDungeonObjects={

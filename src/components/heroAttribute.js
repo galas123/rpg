@@ -14,7 +14,7 @@ export default class HeroAttribute extends Component {
         return (
             <div className="hero-attribute">
                 <dt className="hero-attribute-caption">{name}</dt>
-                <dd className="hero-attribute-value">{value}</dd>{extraContent}
+                <dd className="hero-attribute-value">{value}{extraContent}</dd>
             </div>
         );
     }

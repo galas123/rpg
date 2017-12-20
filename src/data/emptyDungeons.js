@@ -1,4 +1,4 @@
-import {WALL} from './constants';
+import {WALL} from '../constants/index';
 
 import {List}  from 'immutable';
 

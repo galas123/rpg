@@ -105,3 +105,13 @@
   text-shadow: 1px 2px 3px rgba(0,0,0,0.5);
 }
 
+.toggle-fog{
+  width:120px;
+  height:40px;
+}
+.hero-attribute-caption{
+  width:100px;
+}
+.hero-attribute-value{
+  width:80px;
+}

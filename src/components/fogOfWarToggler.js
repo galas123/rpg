@@ -9,7 +9,7 @@ class fogOfWarToggler extends Component {
   render() {
     return (
       <div className="toggle-fog">
-        <button type="button" onClick={this.onClick}>Toggle Fog of War</button>
+        <button className="toggle-fog" type="button" onClick={this.onClick}>Toggle Fog of War</button>
       </div>
     );
   }
