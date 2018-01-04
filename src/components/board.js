@@ -7,8 +7,10 @@ import {moveUpHero} from '../AC/moveUpHero';
 import {moveDownHero} from '../AC/moveDownHero';
 import {moveLeftHero} from '../AC/moveLeftHero';
 import {moveRightHero} from '../AC/moveRightHero';
+import {reset} from '../AC/reset';
 
-import {dungeonSelector} from '../selectors/selectors';
+import {dungeonSelector, isLooserSelector} from '../selectors/selectors';
+import {setRandomItems} from "../AC/setRandomItems";
 
 
 class Board extends Component {
@@ -33,7 +35,13 @@ class Board extends Component {
     }
 
     onKeyDown = (ev) => {
-        const {moveUpHero, moveDownHero, moveLeftHero, moveRightHero} = this.props;
+        const {moveUpHero, moveDownHero, moveLeftHero, moveRightHero, reset, isLooser, setRandomItems} = this.props;
+        console.log('нажата кнопка с номером', ev.keyCode);
+        if (isLooser && ev.keyCode == 32) {
+            reset();
+            setRandomItems();
+
+        }
         switch (ev.keyCode) {
             case 38:
                 moveUpHero();
@@ -47,15 +55,22 @@ class Board extends Component {
             case 39:
                 moveRightHero();
                 break;
-
         }
     }
 }
 
 const mapStateToProps = state => {
     return {
-        dungeon: dungeonSelector(state.dungeon)
+        dungeon: dungeonSelector(state.dungeon),
+        isLooser: isLooserSelector(state.dungeon)
     };
 }
 
-export default connect(mapStateToProps, {moveUpHero, moveDownHero, moveLeftHero, moveRightHero})(Board);
+export default connect(mapStateToProps, {
+    moveUpHero,
+    moveDownHero,
+    moveLeftHero,
+    moveRightHero,
+    reset,
+    setRandomItems
+})(Board);

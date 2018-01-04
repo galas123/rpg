@@ -15,4 +15,5 @@ export const WIN="WIN" ;
 export const NEW_WEAPON = "NEW_WEAPON";
 export const NEXT_DUNGEON="NEXT_DUNGEON";
 export const CHANGE_DIRECTION="CHANGE_DIRECTION";
+export const RESET="RESET";
 

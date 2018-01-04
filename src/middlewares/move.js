@@ -3,6 +3,7 @@ import {
     MOVE_DOWN_HERO,
     MOVE_LEFT_HERO,
     MOVE_RIGHT_HERO,
+    ENEMY_CHANGE,
     mapDungeonToGettingXP,
     XPtoGetNextLevel,
     addToAttackAfterLevelUp,
@@ -17,7 +18,6 @@ import {
     WIN,
     LEVEL_UP,
     XP_INCREASE,
-    ENEMY_CHANGE,
     HERO_HEALTH_CHANGE,
     HERO_STEP,
     NEW_WEAPON,
@@ -25,9 +25,7 @@ import {
     CHANGE_DIRECTION
 } from '../constants'
 
-import {isLooserSelector, isWinnerSelector} from '../selectors/selectors';
-
-import {
+import {isLooserSelector, isWinnerSelector, heroCoordinateX, heroCoordinateY, dungeonSelector,
     attackSelector, dungeonNumberSelector, heartSelector, levelSelector,
     nextLevelSelector, weaponSelector
 } from '../selectors/selectors';
@@ -38,12 +36,14 @@ export default store => next => action => {
         next(action);
         return;
     }
+
     const state = store.getState().dungeon;
     if (isLooserSelector(state) || isWinnerSelector(state)) {
         return;
     }
-    let locationX = state.getIn(['heroLocation', 'x']);
-    let locationY = state.getIn(['heroLocation', 'y']);
+
+    let locationX = heroCoordinateX(state);
+    let locationY = heroCoordinateY(state);
     let x0, y0;
     let x1 = x0 = locationX;
     let y1 = y0 = locationY;
@@ -74,88 +74,93 @@ export default store => next => action => {
                 }
             });
             break;
+            default: 
+            return;
     }
 
 
-    let itemInNewPosition = state.getIn(['dungeon', x1, y1]);
+    let itemInNewPosition = getNextValue(state, x1, y1);
+
+    console.log('itemInNewPosition', itemInNewPosition);
+    if (itemInNewPosition === 0){
+        makeStep(x0,y0,x1,y1,next);
+        return;
+    };
+    if (itemInNewPosition === WALL){
+        next(action)
+    };
 
     let currentAttack = attackSelector(state);
     let heroHealth = heartSelector(state);
-    let itemName = (typeof itemInNewPosition === 'object') ? itemInNewPosition.name : null;
 
-    if (itemName === ENEMY || itemName === BOSS) {
-        let enemyHealth = itemInNewPosition.health - currentAttack;
-        let enemyAttack = (itemInNewPosition.level + 1) * 5;
-        let newHeroHealth = heroHealth - enemyAttack;
-        if (newHeroHealth <= 0) {
-            next({
-                type: HERO_DEAD,
-            });
-            return;
-        } else {
+    if (typeof itemInNewPosition === 'object') {
+        const {name, level, health}=itemInNewPosition;
+        const enemyLevel=level;
+
+        const enemyHealth = health - currentAttack;
+        let enemyAttack = (enemyLevel + 1) * 5;
+            let newHeroHealth = heroHealth - enemyAttack;
+            if (newHeroHealth <= 0) {
+                next({
+                    type: HERO_DEAD,
+                });
+                return;
+            }
             next({
                 type: HERO_HEALTH_CHANGE,
                 payload: {
                     newHeroHealth
                 }
             });
-        }
-        if (enemyHealth <= 0) {
-            if (itemName === BOSS) {
-                next({
-                    type: WIN,
-                });
-                return;
-            }
-            let XPtoNextLevel = nextLevelSelector(state);
-            let heroLevel = levelSelector(state);
-            let xpForDeadEnemy = mapDungeonToGettingXP[heroLevel];
-            if (XPtoNextLevel - xpForDeadEnemy <= 0) {
-                next({
-                    type: LEVEL_UP,
-                    payload: {
-                        newLevel: heroLevel + 1,
-                        newXP: XPtoGetNextLevel[heroLevel + 1],
-                        newAttack: currentAttack + addToAttackAfterLevelUp[heroLevel + 1]
-                    }
-                });
+
+            if (enemyHealth <= 0) {
+                if (name === BOSS) {
+                    next({
+                        type: WIN,
+                    });
+                    return;
+                }
+
+                let XPtoNextLevel = nextLevelSelector(state);
+                let heroLevel = levelSelector(state);
+                let xpForDeadEnemy = mapDungeonToGettingXP[enemyLevel];
+                if (XPtoNextLevel - xpForDeadEnemy <= 0) {
+                    next({
+                        type: LEVEL_UP,
+                        payload: {
+                            newLevel: heroLevel + 1,
+                            newXP: XPtoGetNextLevel[heroLevel + 1],
+                            newAttack: currentAttack + addToAttackAfterLevelUp[heroLevel + 1]
+                        }
+                    });
+                }
+                else {
+                    next({
+                        type: XP_INCREASE,
+                        payload: {
+                            newXP: XPtoNextLevel - xpForDeadEnemy,
+                        }
+                    })
+                }
+                makeStep(x0,y0,x1,y1,next);
             }
             else {
                 next({
-                    type: XP_INCREASE,
+                    type: ENEMY_CHANGE,
                     payload: {
-                        newXP: XPtoNextLevel - xpForDeadEnemy,
+                        x1,
+                        y1,
+                        itemInNewPosition,
+                        enemyHealth
                     }
-                })
-            }
-
-            next({
-                type: HERO_STEP,
-                payload: {
-                    x1,
-                    y1,
-                    x0,
-                    y0
+                    })
                 }
-            })
-        }
-        else {
-            next({
-                type: ENEMY_CHANGE,
-                payload: {
-                    x1,
-                    y1,
-                    itemInNewPosition,
-                    enemyHealth
-                }
-            })
-        }
-        return;
+            return;
     }
 
-    if (itemInNewPosition !== WALL && itemInNewPosition !== DUNGEON) {
 
-        if (itemInNewPosition === DRUG) {
+    switch (itemInNewPosition) {
+        case DRUG:
             let newHeroHealth = heartSelector(state) + HEART_INCREASE;
             next({
                 type: HERO_HEALTH_CHANGE,
@@ -163,9 +168,10 @@ export default store => next => action => {
                     newHeroHealth
                 }
             });
-        }
+            makeStep(x0,y0,x1,y1, next);
+            break;
 
-        if (itemInNewPosition === WEAPON) {
+        case WEAPON:
             let currentWeapon = weaponSelector(state);
             let currentWeaponIndex = WEAPONS.indexOf(currentWeapon);
             let nextWeapon = WEAPONS[currentWeaponIndex + 1];
@@ -178,31 +184,40 @@ export default store => next => action => {
                     }
                 });
             }
-        }
+            makeStep(x0,y0,x1,y1,next);
+            break;
 
-        next({
-            type: HERO_STEP,
-            payload: {
-                x1,
-                y1,
-                x0,
-                y0
+        case DUNGEON:
+            let newDungeonNumber = dungeonNumberSelector(state) + 1;
+            if (newDungeonNumber < 5) {
+                next({
+                    type: NEXT_DUNGEON,
+                    payload: {
+                        newDungeonNumber
+                    }
+                });
             }
-        });
-        next(action);
-    }
-
-    if (itemInNewPosition === DUNGEON) {
-        let newDungeonNumber = dungeonNumberSelector(state) + 1;
-        if (newDungeonNumber < 5) {
-            next({
-                type: NEXT_DUNGEON,
-                payload: {
-                    newDungeonNumber
-                }
-            });
-        }
-        return;
-    }
+            break;
+            default:
+            return;
+};
+next(action);
 }
+
+const getNextValue=(state, i,j)=>{
+    return dungeonSelector(state).getIn([i, j]);
+} ;
+
+const makeStep = (x0,y0,x1,y1,next) =>{
+    next({
+        type: HERO_STEP,
+        payload: {
+            x1,
+            y1,
+            x0,
+            y0
+        }
+    });
+}
+
 

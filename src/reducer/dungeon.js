@@ -2,8 +2,7 @@ import {DUNGEONS} from '../data/emptyDungeons';
 import {
     zeroDungeonObjects,
     SET_RANDOM_ITEMS,
-    MOVE_LEFT_HERO,
-    MOVE_RIGHT_HERO,
+    RESET,
     HERO,
     DRUG,
     DUNGEON,
@@ -51,80 +50,86 @@ const defaultState = Map({
 });
 
 export default (state = defaultState, action) => {
-    const {type,payload} = action;
-    let locationX = state.getIn(['heroLocation', 'x']);
-    let locationY = state.getIn(['heroLocation', 'y']);
-    let itemInNewPosition;
+    const {type, payload} = action;
 
     switch (type) {
+
+        case RESET:
+            return defaultState;
 
         case CHANGE_DIRECTION:
             return state.setIn(['hero', 'lastMoveOnTheLeft'], payload.direction);
             break;
 
         case TOGGLE_FOG:
-            const togglerFog=!fogSelector(state);
-            return state.set('fog', togglerFog);
+            const isFogOn = !fogSelector(state);
+            return state.set('fog', isFogOn);
 
         case SET_RANDOM_ITEMS:
-            const dungeonGenerator = new DungeonGenerator(state);
-            dungeonGenerator.placeItem(zeroDungeonObjects.hero, HERO)
-                .placeItem(zeroDungeonObjects.drug, DRUG)
-                .placeItem(zeroDungeonObjects.weapon, WEAPON)
-                .placeEnemies(enemySetForDungeon[0])
-                .placeItem(zeroDungeonObjects.dungeon, DUNGEON);
-            return dungeonGenerator.newState;
+            return setRandomItems(state);
 
         case HERO_STEP:
-            return state
-                .setIn(['dungeon', payload.x1, payload.y1], HERO)
-                .setIn(['dungeon', payload.x0, payload.y0], 0)
-                .setIn(['heroLocation', 'x'], payload.x1)
-                .setIn(['heroLocation', 'y'], payload.y1);
+            return makeStep(state,payload.x1, payload.y1, payload.x0, payload.y0);
 
         case WIN:
             return state.set('isWinner', true);
 
         case HERO_DEAD:
-            return state.setIn(['hero', 'heart'],0);
+            return state.setIn(['hero', 'heart'], 0);
 
         case LEVEL_UP:
             return state
-                .setIn (['hero', 'level'], payload.newLevel)
-                .setIn (['hero', 'nextLevel'], payload.newXP)
-                .setIn (['hero', 'attack'], payload.newAttack);
+                .setIn(['hero', 'level'], payload.newLevel)
+                .setIn(['hero', 'nextLevel'], payload.newXP)
+                .setIn(['hero', 'attack'], payload.newAttack);
 
         case XP_INCREASE:
-            return state.setIn (['hero', 'nextLevel'],payload.newXP);
+            return state.setIn(['hero', 'nextLevel'], payload.newXP);
 
         case ENEMY_CHANGE:
             return state.setIn(['dungeon', payload.x1, payload.y1],
-                {... payload.itemInNewPosition, health: payload.enemyHealth});
+                {...payload.itemInNewPosition, health: payload.enemyHealth});
 
         case HERO_HEALTH_CHANGE:
-            return state.setIn(['hero', 'heart'],payload.newHeroHealth);
+            return state.setIn(['hero', 'heart'], payload.newHeroHealth);
 
         case NEW_WEAPON:
             return state.setIn(['hero', 'weapon'], payload.nextWeapon)
-                .setIn(['hero', 'attack'],payload.newAttack);
+                .setIn(['hero', 'attack'], payload.newAttack);
 
-        case NEXT_DUNGEON:
-            let newDungeonNumber=payload.newDungeonNumber;
-            let newState=state.set('dungeonNumber', newDungeonNumber)
+        case NEXT_DUNGEON: {
+            const newDungeonNumber = payload.newDungeonNumber;
+            const newState = state.set('dungeonNumber', newDungeonNumber)
                 .set('dungeon', DUNGEONS[newDungeonNumber])
                 .setIn(['heroLocation', 'x'], null)
                 .setIn(['heroLocation', 'y'], null);
 
-            const dungeonGenerator2 = new DungeonGenerator(newState);
-            dungeonGenerator2.placeItem(DUNGEON_OBJECTS[newDungeonNumber].hero, HERO)
+            const dungeonGenerator = new DungeonGenerator(newState);
+            dungeonGenerator.placeItem(DUNGEON_OBJECTS[newDungeonNumber].hero, HERO)
                 .placeItem(DUNGEON_OBJECTS[newDungeonNumber].drug, DRUG)
                 .placeItem(DUNGEON_OBJECTS[newDungeonNumber].weapon, WEAPON)
                 .placeEnemies(enemySetForDungeon[newDungeonNumber])
                 .placeItem(DUNGEON_OBJECTS[newDungeonNumber].dungeon, DUNGEON);
 
-            return dungeonGenerator2.newState;
+            return dungeonGenerator.newState;
+        }
     }
     return state;
 }
+ const setRandomItems = (state) => {
+    const dungeonGenerator = new DungeonGenerator(state);
+    dungeonGenerator.placeItem(zeroDungeonObjects.hero, HERO)
+        .placeItem(zeroDungeonObjects.drug, DRUG)
+        .placeItem(zeroDungeonObjects.weapon, WEAPON)
+        .placeEnemies(enemySetForDungeon[0])
+        .placeItem(zeroDungeonObjects.dungeon, DUNGEON);
+    return dungeonGenerator.newState;
+ }
 
-
+const makeStep = (state, x1, y1, x0, y0) => {
+    return state
+                .setIn(['dungeon', x1, y1], HERO)
+                .setIn(['dungeon', x0, y0], 0)
+                .setIn(['heroLocation', 'x'], x1)
+                .setIn(['heroLocation', 'y'], y1);
+}

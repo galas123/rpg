@@ -1,7 +1,7 @@
 import {createSelector} from 'reselect';
 
 export const isWinnerSelector = state => state.get('isWinner');
-export const heartSelector = state =>{console.log({state}); return state.getIn(['hero','heart']);}
+export const heartSelector = state => state.getIn(['hero','heart']);
 export const  attackSelector = state => state.getIn(['hero','attack']);
 export const weaponSelector = state => state.getIn(['hero','weapon']);
 export const  levelSelector = state => state.getIn(['hero','level']);
@@ -17,3 +17,18 @@ export const isLooserSelector = createSelector(
   heartSelector,
   health => health<=0
 )
+
+export const nextLevelLabelSelector  = createSelector(
+    nextLevelSelector,
+    xp => `${xp} XP`
+);
+
+export const heroCoordinateX = createSelector(
+    heroLocationSelector,
+    heroLocation => heroLocation.get('x')
+);
+
+export const heroCoordinateY = createSelector(
+    heroLocationSelector,
+    heroLocation => heroLocation.get('y')
+);

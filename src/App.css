@@ -1,6 +1,6 @@
 .rpg{
   position:relative;
-  width: 1420px;
+  width: 100%;
 }
 .rpg_caption{
   text-align: center;
@@ -65,8 +65,8 @@
 }
 .rpg-stop-game{
   position:absolute;
-  width:120%;
-  height:140%;
+  width:100%;
+  height:100%;
   background-color:rgba(0,0,0,0.5);
   left: 0;
   top: 0;
@@ -76,7 +76,7 @@
   position:absolute;
   padding: 20px 30px;
   position: absolute;
-  width: 100px;
+  width: 200px;
   border: 1px solid #ddd;
   z-index: 6;
   left: 45%;
@@ -84,6 +84,7 @@
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 1px 1px 1px #ccc;
+  text-align: center;
 }
 .rpg-winner{
   padding: 20px 30px;
@@ -109,9 +110,15 @@
   width:120px;
   height:40px;
 }
-.hero-attribute-caption{
+.hero-attribute__caption{
   width:100px;
 }
-.hero-attribute-value{
+.hero-attribute__value{
   width:80px;
+}
+.continue-hint{
+  margin-top:40px;
+  color:red;
+  text-shadow: 2px 2px 2px #ccc;
+  text-align: center;
 }
